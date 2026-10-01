@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Işıltı: Öz-Sevgi ve Kendini Keşfet</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff5f8 0%, #fff0f5 50%, #f7f3ff 100%);
+            color: #334155;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #ec4899 0%, #f97316 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #db2777 0%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Nefes Egzersizi Animasyonu */
+        @keyframes breath {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.35); opacity: 1; box-shadow: 0 0 35px rgba(236, 72, 153, 0.4); }
+        }
+
+        .breath-circle {
+            animation: breath 8s infinite ease-in-out;
+        }
+
+        /* Yavaş Süzülme Animasyonu */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        #chat-window {
+            height: 360px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        .chat-message {
+            margin-bottom: 0.85rem;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            max-width: 85%;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 0.2rem;
+        }
+
+        .bot-message {
+            background: #ffffff;
+            color: #1e293b;
+            margin-right: auto;
+            border-bottom-left-radius: 0.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col justify-between selection:bg-pink-200 selection:text-pink-900">
+
+    <!-- Üst Gezinme Çubuğu (Header) -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-pink-100/60 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
+            <!-- Marka / Logo -->
+            <a href="#" class="flex items-center gap-2 group">
+                <span class="text-2xl transform group-hover:scale-110 transition duration-300">✨</span>
+                <span class="text-2xl font-extrabold tracking-tight text-gray-900">
+                    Işıltı<span class="text-pink-500">.</span>
+                </span>
+            </a>
+
+            <!-- Masaüstü Navigasyon -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 font-medium text-sm">
+                <a href="#guc" class="text-gray-600 hover:text-pink-600 px-3 py-2 rounded-xl hover:bg-pink-50/80 transition">Bedenim Harika</a>
+                <a href="#olumlama" class="text-gray-600 hover:text-pink-600 px-3 py-2 rounded-xl hover:bg-pink-50/80 transition">Günün Olumlaması</a>
+                <a href="#sevme" class="text-gray-600 hover:text-pink-600 px-3 py-2 rounded-xl hover:bg-pink-50/80 transition">Işığını Keşfet</a>
+                <a href="#ilham-panosu" class="text-gray-600 hover:text-pink-600 px-3 py-2 rounded-xl hover:bg-pink-50/80 transition">İlham Panosu</a>
+                <a href="#ai-destek" class="text-gray-600 hover:text-pink-600 px-3 py-2 rounded-xl hover:bg-pink-50/80 transition">AI Desteği</a>
+                <a href="#katil" class="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-5 py-2.5 rounded-full font-semibold shadow-md shadow-pink-200 hover:shadow-lg transition duration-200 ml-2">
+                    Katıl ve Parlat
+                </a>
+            </nav>
+
+            <!-- Mobil Menü Butonu -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-gray-600 hover:text-pink-600 hover:bg-pink-50 focus:outline-none" aria-label="Menüyü Aç/Kapat">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobil Navigasyon Menüsü -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-b border-pink-100 px-4 pt-2 pb-6 space-y-2 font-medium">
+            <a href="#guc" class="block text-gray-700 hover:text-pink-600 py-2 rounded-lg px-3 hover:bg-pink-50">Bedenim Harika</a>
+            <a href="#olumlama" class="block text-gray-700 hover:text-pink-600 py-2 rounded-lg px-3 hover:bg-pink-50">Günün Olumlaması</a>
+            <a href="#sevme" class="block text-gray-700 hover:text-pink-600 py-2 rounded-lg px-3 hover:bg-pink-50">Işığını Keşfet</a>
+            <a href="#ilham-panosu" class="block text-gray-700 hover:text-pink-600 py-2 rounded-lg px-3 hover:bg-pink-50">İlham Panosu</a>
+            <a href="#ai-destek" class="block text-gray-700 hover:text-pink-600 py-2 rounded-lg px-3 hover:bg-pink-50">AI Desteği</a>
+            <a href="#katil" class="block text-center bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 rounded-xl font-semibold shadow-md mt-2">
+                Katıl ve Parlat
+            </a>
+        </div>
+    </header>
+
+    <!-- Giriş (Hero) Bölümü -->
+    <section class="relative pt-12 pb-20 md:pt-20 md:pb-28 text-center overflow-hidden">
+        <!-- Arka Plan Süsleme Halka Efektleri -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-300/20 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+        <div class="absolute top-10 right-10 w-72 h-72 bg-purple-300/20 rounded-full blur-2xl -z-10 pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-100/80 text-pink-700 text-sm font-semibold mb-6 shadow-sm border border-pink-200/50 animate-float">
+                <span>🌟</span>
+                <span>Işıltı: Öz-Sevgi ve Kendini Keşfet</span>
+            </div>
+            
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-black mb-6 tracking-tight leading-[1.15]">
+                <span class="text-gray-900">Sen Bir Yıldızsın,</span> <br>
+                <span class="text-gradient">Işıltınla Tamamsın.</span>
+            </h1>
+
+            <p class="text-lg sm:text-xl text-gray-600 mb-9 max-w-2xl mx-auto font-normal leading-relaxed">
+                Kendine kocaman bir "merhaba" de! Bedenini ve ruhunu coşkuyla kucakla. Unutma, senin değerin <strong class="text-gray-800 font-semibold">tartışılmaz</strong>!
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button onclick="document.getElementById('sevme').scrollIntoView({behavior: 'smooth'})" class="w-full sm:w-auto bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white text-lg font-bold py-3.5 px-8 rounded-full shadow-xl shadow-pink-200 hover:shadow-2xl hover:scale-105 transition duration-300 ease-in-out">
+                    Kabul Et ve Yüksel ✨
+                </button>
+                <a href="#nefes" class="w-full sm:w-auto bg-white/80 hover:bg-white text-gray-700 hover:text-pink-600 text-lg font-semibold py-3.5 px-7 rounded-full shadow-md border border-gray-200 hover:border-pink-200 transition duration-300">
+                    Sakinleş & Nefes Al 🧘‍♀️
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- YENİ EKLEME: Günün Olumlama Kartı Widget'ı -->
+    <section id="olumlama" class="py-12 bg-white/60 backdrop-blur-sm border-y border-pink-100/80">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <span class="text-xs font-bold tracking-widest text-pink-500 uppercase mb-2 block">Günün Hediyesi</span>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">✨ Günün Olumlama Kartı</h3>
+            
+            <div class="glass-card p-8 rounded-3xl shadow-xl border border-pink-100 transition-all duration-300 hover:shadow-2xl relative overflow-hidden">
+                <div class="text-5xl mb-4" id="affirmation-emoji">🌸</div>
+                <p id="affirmation-text" class="text-xl sm:text-2xl font-semibold text-gray-800 italic leading-relaxed mb-6">
+                    "Bugün bedenime ve ruhuma sevgiyle yaklaşıyorum. Kendi ışığımı yansıtmaktan çekinmiyorum."
+                </p>
+                <button onclick="generateAffirmation()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold py-2.5 px-6 rounded-full text-sm transition duration-200 flex items-center gap-2 mx-auto shadow-sm">
+                    <span>⚡ Yeni Olumlama Çek</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- İçsel Güç Bölümü: Bedenin Gücü ve Kabul Ediş -->
+    <section id="guc" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-extrabold mb-4 section-title">Bedenin Mucizesi: Seni Taşıyan O Eşsiz Yapı</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Kendine şefkatle bak! Vücudunun sana sunduğu her şeye kocaman bir teşekkür et. Sen zaten harikasın.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Kart 1: Özgünlük -->
+                <div class="glass-card p-8 rounded-2xl shadow-lg border-t-4 border-pink-500 hover:-translate-y-1.5 transition duration-300">
+                    <div class="w-14 h-14 bg-pink-100 rounded-2xl flex items-center justify-center text-3xl mb-6 text-pink-500 shadow-inner">🌟</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">Eşsizliğin Kutlu Olsun!</h3>
+                    <p class="text-gray-600 leading-relaxed">Senin gibi biri daha yok. Farklılıkların senin süper gücün. Onları gizleme, onlarla gurur duy!</p>
+                </div>
+
+                <!-- Kart 2: Dayanıklılık -->
+                <div class="glass-card p-8 rounded-2xl shadow-lg border-t-4 border-orange-400 hover:-translate-y-1.5 transition duration-300">
+                    <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center text-3xl mb-6 text-orange-500 shadow-inner">💖</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">Vücuduna Minnettar Ol</h3>
+                    <p class="text-gray-600 leading-relaxed">Vücudun her an seninle birlikte! O, hayat yolculuğundaki en sadık partnerin. Ona sevgiyle yaklaştığın için tebrikler.</p>
+                </div>
+
+                <!-- Kart 3: İçsel Değer -->
+                <div class="glass-card p-8 rounded-2xl shadow-lg border-t-4 border-purple-400 hover:-translate-y-1.5 transition duration-300">
+                    <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center text-3xl mb-6 text-purple-500 shadow-inner">👑</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">Sen Zaten Bir Kralsın/Kraliçesin!</h3>
+                    <p class="text-gray-600 leading-relaxed">Dış görünüş sadece bir kılıftır. Gerçek güzelliğin; ruhunda, nezaketinde ve zekanda parlıyor. Sen çok değerlisin.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- YENİ EKLEME: Ritmik Nefes Egzersizi Bölümü -->
+    <section id="nefes" class="py-16 bg-gradient-to-r from-pink-100/50 via-purple-100/50 to-pink-100/50">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h3 class="text-3xl font-extrabold text-gray-800 mb-3">🧘‍♀️ Bir An Dur ve Nefes Al</h3>
+            <p class="text-gray-600 mb-10">Zihnini sakinleştir, omuzlarını düşür ve dairenin ritmiyle derin nefesler al.</p>
+
+            <div class="flex flex-col items-center justify-center my-6">
+                <div class="relative flex items-center justify-center">
+                    <div class="w-44 h-44 rounded-full bg-gradient-to-tr from-pink-400 to-rose-300 breath-circle flex items-center justify-center shadow-xl">
+                        <span id="breath-label" class="text-white font-bold text-lg">Nefes Al...</span>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-8">Nefes ritmi: 4sn Nefes Al - 4sn Nefes Ver</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kendini Sevme Bölümü: Kabul ve Özgüven Adımları -->
+    <section id="sevme" class="py-20 bg-white/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+                
+                <!-- Metin İçerik -->
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold mb-4 section-title">İçindeki Işığı Keşfet: Kendini Sevme Adımları</h2>
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                        Senin değerin tartışılmaz. Gel, içindeki o güzel sesi birlikte dinleyelim ve öz-sevgi yolculuğunda sana destek olalım. Sen en iyisini hak ediyorsun!
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-pink-100 hover:shadow-md transition">
+                            <span class="flex-shrink-0 text-2xl p-2 bg-pink-100 rounded-xl mr-4">✨</span>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-1">Pozitif Aynalama</h3>
+                                <p class="text-gray-600 text-sm leading-relaxed">Aynaya baktığında eleştirmek yerine, kendine iltifat et. "Ben değerliyim, ben güçlüyüm ve <strong class="text-pink-600">harika görünüyorum</strong>!" de.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-pink-100 hover:shadow-md transition">
+                            <span class="flex-shrink-0 text-2xl p-2 bg-purple-100 rounded-xl mr-4">📵</span>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-1">Toksik Karşılaştırmalardan Uzak Dur</h3>
+                                <p class="text-gray-600 text-sm leading-relaxed">Sosyal medyada sana kötü hissettiren her şeye dur de. Odak noktan sensin ve sen <strong class="text-purple-600">tek başına yetersin</strong>.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-pink-100 hover:shadow-md transition">
+                            <span class="flex-shrink-0 text-2xl p-2 bg-orange-100 rounded-xl mr-4">🌱</span>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-1">Kendine Şefkat Göster</h3>
+                                <p class="text-gray-600 text-sm leading-relaxed">Hata yapmak insanca. Kendini yargılamak yerine, en iyi arkadaşına davranacağın gibi nazik ve <strong class="text-orange-600">anlayışlı</strong> ol.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Ekstra Teşvik Metni Kartı -->
+                <div class="glass-card p-8 sm:p-10 rounded-3xl shadow-2xl border-2 border-orange-200 relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-32 h-32 bg-orange-200/40 rounded-full blur-xl pointer-events-none"></div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-gray-900 mb-4">Unutma: Sen Çok Kıymetlisin!</h3>
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed">Özgüven, her gün büyüttüğün bir çiçektir. Vücudun, seninle birlikte bu hayatta yolculuk eden <strong class="text-gray-800">harika bir ortaktır</strong>. Ona bugün bir sarılma borcun var.</p>
+                    <div class="text-center p-6 bg-orange-50/80 rounded-2xl border border-orange-100">
+                        <span class="text-6xl animate-bounce inline-block" role="img" aria-label="Parlayan kalp">💖💫</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- İlham Panosu Bölümü -->
+    <section id="ilham-panosu" class="py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-extrabold mb-3 section-title">İlham Panosu: Senin Gibi Parlayan Sesler</h2>
+                <p class="text-lg text-gray-600">Bu bölümde, topluluğumuzdan gelen pozitif mesajları ve öz-kabul hikayelerini bulabilirsin. Unutma, <strong class="text-pink-600">sen yalnız değilsin!</strong></p>
+            </div>
+
+            <div id="messages-list" class="space-y-6">
+                <!-- Örnek Mesaj 1 -->
+                <div class="glass-card p-6 rounded-2xl shadow-md border-l-4 border-pink-500 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:shadow-lg transition">
+                    <div>
+                        <p class="text-gray-800 italic text-base sm:text-lg mb-2">"Vücudumun her zaman yanımda olması ve beni taşıması beni çok mutlu ediyor. Ona minnettarım! <strong class="text-pink-600 font-semibold">İyi ki varsın!</strong>"</p>
+                        <p class="text-sm font-semibold text-pink-700">- Bir Cesur Ruh</p>
+                    </div>
+                    <button onclick="likePost(this)" class="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-pink-50 hover:bg-pink-100 text-pink-600 px-3.5 py-2 rounded-full transition self-end sm:self-center">
+                        <span>❤️</span> <span class="like-count">12</span>
+                    </button>
+                </div>
+
+                <!-- Örnek Mesaj 2 -->
+                <div class="glass-card p-6 rounded-2xl shadow-md border-l-4 border-orange-400 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:shadow-lg transition">
+                    <div>
+                        <p class="text-gray-800 italic text-base sm:text-lg mb-2">"Sosyal medyadaki karşılaştırmaları bıraktığımda iç huzuru buldum. <strong class="text-orange-600 font-semibold">Herkes kendi yolculuğunda ve hepimiz harikayız!</strong>"</p>
+                        <p class="text-sm font-semibold text-orange-700">- Güçlü Bir Ses</p>
+                    </div>
+                    <button onclick="likePost(this)" class="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-orange-50 hover:bg-orange-100 text-orange-600 px-3.5 py-2 rounded-full transition self-end sm:self-center">
+                        <span>❤️</span> <span class="like-count">28</s
